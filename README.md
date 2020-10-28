@@ -3,7 +3,7 @@
 CS Survey Analysis
 ==================
 
-...
+R script used for analysis on the survey about Citizen Science practices in the International Long-Term Ecological Research (ILTER) Network.
 
 
 Credits
