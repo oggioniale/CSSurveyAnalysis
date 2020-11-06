@@ -546,8 +546,8 @@ ggplot(matrix7e, aes(x = Var2, y = Var1)) +
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
   scale_y_discrete(labels = function(x) stringr::str_wrap(x, width = 30)) +
   labs(fill = "n of answers") +
-  theme_classic() + theme(axis.text.x = element_text(size = 12, angle = 0, vjust = 0.3),
-                     axis.text.y = element_text(size = 12),
+  theme_classic() + theme(axis.text.x = element_text(size = 8, angle = 0, vjust = 0.3),
+                     axis.text.y = element_text(size = 8),
                      plot.title = element_text(size = 11))
 ggsave("./images2ndPart/7e.png", dpi = 400)
 
@@ -593,7 +593,8 @@ ILTERAnswers %>%
   ggplot2::xlab("") + ggplot2::ylab("Number of projects") +
   ggplot2::geom_text(ggplot2::aes(label = numProj), vjust = 1.6, color = "white", size = 3.5) +
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
-  ggplot2::theme_classic()
+  ggplot2::theme_classic() + theme(axis.text.x = element_text(size = 4, angle = 0, vjust = 0.2),
+                                 axis.text.y = element_text(size = 8))
 ggsave("./images2ndPart/7h.png", dpi = 400)
 
 
@@ -613,8 +614,9 @@ ILTERAnswers %>%
   ggplot2::geom_bar(stat = "identity", fill = "blueviolet") +
   ggplot2::xlab("") + ggplot2::ylab("Number of projects") +
   ggplot2::geom_text(ggplot2::aes(label = numProj), vjust = 1.6, color = "white", size = 3.5) +
-  scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 8)) +
-  ggplot2::theme_classic() #+
+  scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 1)) +
+  ggplot2::theme_classic() + theme(axis.text.x = element_text(size = 5, angle = 0, vjust = 0.3),
+                                   axis.text.y = element_text(size = 8))
   # ggplot2::theme(axis.text = element_text(size = 3))
 ggsave("./images2ndPart/7i_dataType.png", dpi = 400)
 # quality check
@@ -633,7 +635,7 @@ ILTERAnswers %>%
   ggplot2::xlab("") + ggplot2::ylab("Number of projects") +
   ggplot2::geom_text(ggplot2::aes(label = numProj), vjust = 1.6, color = "white", size = 3.5) +
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
-  ggplot2::theme_classic()
+  ggplot2::theme_classic() 
 ggsave("./images2ndPart/7i_qualityCheck.png", dpi = 400)
 
 
