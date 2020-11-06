@@ -655,7 +655,7 @@ ILTERAnswers %>%
   ggplot2::xlab("") + ggplot2::ylab("Number of projects") +
   ggplot2::geom_text(ggplot2::aes(label = numProj), vjust = 1.6, color = "white", size = 3.5) +
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
-  ggplot2::theme_classic()
+  ggplot2::theme_classic() 
 ggsave("./images2ndPart/7j_sharedData.png", dpi = 400)
 # shared findings
 # ILTERAnswers %>% 
@@ -673,7 +673,8 @@ ILTERAnswers %>%
   ggplot2::xlab("") + ggplot2::ylab("Number of projects") +
   ggplot2::geom_text(ggplot2::aes(label = numProj), vjust = 1.6, color = "white", size = 3.5) +
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
-  ggplot2::theme_classic()
+  ggplot2::theme_classic() + theme(axis.text.x = element_text(size = 8, angle = 0, vjust = 0.3),
+                                   axis.text.y = element_text(size = 8))
 ggsave("./images2ndPart/7j_sharedFindings.png", dpi = 400)
 
 
