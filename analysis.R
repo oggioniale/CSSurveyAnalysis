@@ -374,7 +374,7 @@ ILTERAnswers %>%
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
   ggplot2::geom_text(ggplot2::aes(label = n), vjust = 1.6, color = "white", size = 3.5) +
   ggplot2::theme_classic()
-ggsave("./imagesOnlyCS/7a_spatialScale.png", dpi = 400)
+ggsave("./images2ndPart/7a_spatialScale.png", dpi = 400)
 # temporal scale 
 # ILTERAnswers %>% 
 #   filter(as.numeric(Progress) >= 50) %>% 
@@ -410,7 +410,7 @@ ILTERAnswers %>%
     labels = c('<=2', '4', '6', '=>8')
   ) +
   ggplot2::theme_bw()
-ggsave("./imagesOnlyCS/7a_temporalScale.png", dpi = 400)
+ggsave("./images2ndPart/7a_temporalScale.png", dpi = 400)
 
 
 # 7b ############ POSTER #############
@@ -427,7 +427,7 @@ ILTERAnswers %>%
   ggplot2::geom_text(ggplot2::aes(label = n), vjust = 1.6, color = "white", size = 3.5) +
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
   ggplot2::theme_classic()
-ggsave("./imagesOnlyCS/7b.png", dpi = 400)
+ggsave("./images2ndPart/7b.png", dpi = 400)
 
 
 # 7c ############ POSTER #############
@@ -446,7 +446,7 @@ ILTERAnswers %>%
   ggplot2::geom_bar(stat = "identity", fill = "blue4") +
   ggplot2::geom_text(ggplot2::aes(label = numProj), vjust = 1.6, color = "white", size = 3.5) +
   ggplot2::theme_classic()
-ggsave("./imagesOnlyCS/7c_numberOfParticipantPerYear.png", dpi = 400)
+ggsave("./images2ndPart/7c_numberOfParticipantPerYear.png", dpi = 400)
 # type of participans
 # ILTERAnswers %>% 
 #   filter(as.numeric(Progress) >= 50) %>% 
@@ -463,7 +463,7 @@ ILTERAnswers %>%
   ggplot2::geom_text(ggplot2::aes(label = numProj), vjust = 1.6, color = "white", size = 3.5) +
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
   ggplot2::theme_classic()
-ggsave("./imagesOnlyCS/7c_typeOfParticipant.png", dpi = 400)
+ggsave("./images2ndPart/7c_typeOfParticipant.png", dpi = 400)
 # undeserved communities
 # ILTERAnswers %>% 
 #   filter(as.numeric(Progress) >= 50) %>% 
@@ -482,7 +482,7 @@ ILTERAnswers %>%
   ggplot2::geom_text(ggplot2::aes(label = numProj), vjust = 1.6, color = "white", size = 3.5) +
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
   ggplot2::theme_classic()
-ggsave("./imagesOnlyCS/7c_undeservedCommunities.png", dpi = 400)
+ggsave("./images2ndPart/7c_undeservedCommunities.png", dpi = 400)
 
 
 # 7d ############ POSTER #############
@@ -502,7 +502,7 @@ ILTERAnswers %>%
   ggplot2::xlab("Participation frequency") + ggplot2::ylab("Number of projects") +
   ggplot2::geom_text(ggplot2::aes(label = numProj), vjust = 1.6, color = "white", size = 3.5) +
   ggplot2::theme_classic()
-ggsave("./imagesOnlyCS/7d.png", dpi = 400)
+ggsave("./images2ndPart/7d.png", dpi = 400)
 
 
 # 7e ############ POSTER #############
@@ -549,7 +549,7 @@ ggplot(matrix7e, aes(x = Var2, y = Var1)) +
   theme_classic() + theme(axis.text.x = element_text(size = 12, angle = 0, vjust = 0.3),
                      axis.text.y = element_text(size = 12),
                      plot.title = element_text(size = 11))
-ggsave("./imagesOnlyCS/7e.png", dpi = 400)
+ggsave("./images2ndPart/7e.png", dpi = 400)
 
 ggplot(matrix7e, aes(x = Var2, y = Var1)) + 
   # geom_raster() +
@@ -594,7 +594,7 @@ ILTERAnswers %>%
   ggplot2::geom_text(ggplot2::aes(label = numProj), vjust = 1.6, color = "white", size = 3.5) +
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
   ggplot2::theme_classic()
-ggsave("./imagesOnlyCS/7h.png", dpi = 400)
+ggsave("./images2ndPart/7h.png", dpi = 400)
 
 
 # 7i ############ POSTER #############
@@ -616,7 +616,7 @@ ILTERAnswers %>%
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 8)) +
   ggplot2::theme_classic() #+
   # ggplot2::theme(axis.text = element_text(size = 3))
-ggsave("./imagesOnlyCS/7i_dataType.png", dpi = 400)
+ggsave("./images2ndPart/7i_dataType.png", dpi = 400)
 # quality check
 # ILTERAnswers %>% 
 #   filter(as.numeric(Progress) >= 50) %>% 
@@ -634,7 +634,7 @@ ILTERAnswers %>%
   ggplot2::geom_text(ggplot2::aes(label = numProj), vjust = 1.6, color = "white", size = 3.5) +
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
   ggplot2::theme_classic()
-ggsave("./imagesOnlyCS/7i_qualityCheck.png", dpi = 400)
+ggsave("./images2ndPart/7i_qualityCheck.png", dpi = 400)
 
 
 # 7j ############ POSTER #############
@@ -654,7 +654,7 @@ ILTERAnswers %>%
   ggplot2::geom_text(ggplot2::aes(label = numProj), vjust = 1.6, color = "white", size = 3.5) +
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
   ggplot2::theme_classic()
-ggsave("./imagesOnlyCS/7j_sharedData.png", dpi = 400)
+ggsave("./images2ndPart/7j_sharedData.png", dpi = 400)
 # shared findings
 # ILTERAnswers %>% 
 #   filter(as.numeric(Progress) >= 50) %>% 
@@ -672,7 +672,7 @@ ILTERAnswers %>%
   ggplot2::geom_text(ggplot2::aes(label = numProj), vjust = 1.6, color = "white", size = 3.5) +
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
   ggplot2::theme_classic()
-ggsave("./imagesOnlyCS/7j_sharedFindings.png", dpi = 400)
+ggsave("./images2ndPart/7j_sharedFindings.png", dpi = 400)
 
 
 # 7k ############ POSTER #############
@@ -692,4 +692,4 @@ ILTERAnswers %>%
   ggplot2::geom_text(ggplot2::aes(label = numProj), vjust = 1.6, color = "white", size = 3.5) +
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
   ggplot2::theme_classic()
-ggsave("./imagesOnlyCS/7k.png", dpi = 400)
+ggsave("./images2ndPart/7k.png", dpi = 400)
