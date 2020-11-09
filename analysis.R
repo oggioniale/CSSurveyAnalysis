@@ -24,6 +24,7 @@ View(europeCountries@data)
 # = 77
 CSPool <- ILTERAnswers %>% 
   filter(as.numeric(ProgressCS) >= 75) %>% 
+  # filter(Finished == 'True') %>% # = 75
   count()
 
 
@@ -141,7 +142,7 @@ print(round((participationVSresponces/halfOfAnswers)*100, 1))
 # 5b ############ POSTER #############
 participationCSDifference <- ILTERAnswers %>% 
   filter(as.numeric(Progress) >= 50) %>% 
-  # filter(Q10 > 0) %>%
+  filter(Q10 > 0) %>%
   select(c(Q10, Q31:Q36)) #%>% View()
 participationCSDifference$age <- as.numeric(format(Sys.Date(), "%Y")) - participationCSDifference$Q33
 # Q31 ILTER Role
@@ -156,7 +157,7 @@ participationCSDifference %>%
   ggplot2::geom_text(ggplot2::aes(label = n), vjust = 1.6, color = "white", size = 3.5) +
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
   ggplot2::theme_classic()
-ggsave("./images/5b_role.png", dpi = 400)
+ggsave("./images2ndPart/5b_role.png", dpi = 400)
 # Q32 Career Level
 participationCSDifference %>% 
   group_by(Q32) %>% 
@@ -169,7 +170,7 @@ participationCSDifference %>%
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
   ggplot2::geom_text(ggplot2::aes(label = n), vjust = 1.6, color = "white", size = 3.5)+
   ggplot2::theme_classic()
-ggsave("./images/5b_careerLevel.png", dpi = 400)
+ggsave("./images2ndPart/5b_careerLevel.png", dpi = 400)
 # Q33 Age
 participationCSDifference %>% 
   group_by(age) %>% 
@@ -185,7 +186,7 @@ participationCSDifference %>%
   ggplot2::xlab("Age") + ggplot2::ylab("Participants in CS initiatives") +
   ggplot2::geom_text(ggplot2::aes(label = n), vjust = 1.6, color = "white", size = 3.5)+
   ggplot2::theme_classic()
-ggsave("./images/5b_age.png", dpi = 400)
+ggsave("./images2ndPart/5b_age.png", dpi = 400)
 # Q35 Gender
 participationCSDifference %>% 
   group_by(Q35) %>% 
@@ -197,52 +198,13 @@ participationCSDifference %>%
   ggplot2::xlab("Gender") + ggplot2::ylab("Participants in CS initiatives") +
   ggplot2::geom_text(ggplot2::aes(label = n), vjust = 1.6, color = "white", size = 3.5)+
   ggplot2::theme_classic()
-ggsave("./images/5b_gender.png", dpi = 400)
+ggsave("./images2ndPart/5b_gender.png", dpi = 400)
 # by country
 ILTERAnswers %>%
   filter(as.numeric(Progress) >= 50) %>%
   select(c(Q10, CNTRY_NAME, LTERNetwork)) %>%
   count(CNTRY_NAME) %>%
   transmute(CNTRY_NAME, Percentage = round(n/sum(n)*100, 2))
-
-
-# 5c
-# Q34_1
-participationVSWillingness <- ILTERAnswers %>% 
-  select(c(Q10, Q34_1:Q34_6)) %>% # 220
-  filter(Q34_1 == 'Very\r\nwilling' | Q34_1 == 'Slightly \r\nwilling') %>% # 122
-  # filter(Q10 == 0, na.rm = FALSE) %>% # 54
-  # filter(Q10 > 0) %>% # 68
-  # group_by(Q34_1) %>% 
-  count(is.na(Q10) | Q10 == 0) %>% 
-  mutate(freq = (n/sum(n))*100)
-
-blank_theme <- theme_minimal()+
-  theme(
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    panel.border = element_blank(),
-    panel.grid=element_blank(),
-    axis.ticks = element_blank(),
-    plot.title=element_text(size = 14, face = "bold")
-  )
-
-graphics::pie(
-  participationVSWillingness$freq, 
-  label= c('Willingness with initiatives (57%)', 'Willingness no initiatives (44.3%)'), 
-  edges = 10
-)
-# TRUE = Willingness no initiatives
-# FALSE = Willingness with initiatives
-
-# ggplot2::ggplot(participationVSWillingness, aes(x = "", y = freq, fill = `is.na(Q10) | Q10 == 0`)) +
-#   ggplot2::geom_bar(width = 1, stat = "identity") + 
-#   ggplot2::coord_polar("y", start = 0) +
-#   ggplot2::scale_fill_brewer("Blues") + blank_theme +
-#   ggplot2::theme(axis.text.x = element_blank()) +
-#   ggplot2::geom_text(aes(y = freq/3 + c(0, cumsum(freq)[-length(freq)]), 
-#                          label = round(freq, 1), size = 5))
-
 
 
 # 6
