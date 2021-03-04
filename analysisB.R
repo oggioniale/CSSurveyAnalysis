@@ -13,7 +13,7 @@ ILTERAnswers$age <- as.numeric(format(Sys.Date(), "%Y")) - ILTERAnswers$Q33
 # Pool for the first part of the survey: number of answers with a completeness >= 75 % between column Q34_1-Q8_11 (first part of the survey)
 # October 2020
 # = 165
-CSPool <- ILTERAnswers %>% 
+CSPoolFirstPart <- ILTERAnswers %>% 
   filter(as.numeric(ProgressFirstPart) >= 75) %>% 
   # filter(Finished == 'True') %>% # = 136
   count()
@@ -56,8 +56,6 @@ ggplot(matrix1ab, aes(x = Var2, y = Var1)) +
                           axis.text.y = element_text(size = 8),
                           plot.title = element_text(size = 11))
 ggsave("./images1stPart/1a_b.png", dpi = 400)
-
-
 # 1c
 # Q31 Role
 ILTERAnswers %>% 
@@ -353,14 +351,14 @@ ILTERAnswers %>%
   tidyr::gather(questions, importance, Q6_1:Q6_6) %>% 
   filter(importance == 'Very high\r\nimportance' | importance == 'High\r\nimportance') %>% 
   filter(!is.na(Q31)) %>% 
-  replace(. == 'Q6_1', 'Traditions objectives') %>% 
-  replace(. == 'Q6_2', 'Expanded objectives') %>% 
-  replace(. == 'Q6_3', 'Traditions objectives') %>% 
-  replace(. == 'Q6_4', 'Traditions objectives') %>% 
-  replace(. == 'Q6_5', 'Traditions objectives') %>% 
-  replace(. == 'Q6_6', 'Expanded objectives') %>%
-  replace(. == 'Q6_7', 'Expanded objectives') %>%
-  replace(. == 'Q6_8', 'Expanded objectives') %>%
+  replace(. == 'Q6_1', 'Traditions reasons') %>% 
+  replace(. == 'Q6_2', 'Expanded reasons') %>% 
+  replace(. == 'Q6_3', 'Traditional reasons') %>% 
+  replace(. == 'Q6_4', 'Traditional reasons') %>% 
+  replace(. == 'Q6_5', 'Traditional reasons') %>% 
+  replace(. == 'Q6_6', 'Expanded reasons') %>%
+  replace(. == 'Q6_7', 'Expanded reasons') %>%
+  replace(. == 'Q6_8', 'Expanded reasons') %>%
   group_by(Q31, questions) %>% 
   tally() %>%
   ggplot2::ggplot(mapping = aes(x = Q31, y = n, fill = questions)) +
@@ -379,14 +377,14 @@ ILTERAnswers %>%
   filter(!is.na(Q32)) %>% 
   group_by(Q32, questions) %>% 
   tally() %>%
-  replace(. == 'Q6_1', 'Traditions objectives') %>% 
-  replace(. == 'Q6_2', 'Expanded objectives') %>% 
-  replace(. == 'Q6_3', 'Traditions objectives') %>% 
-  replace(. == 'Q6_4', 'Traditions objectives') %>% 
-  replace(. == 'Q6_5', 'Traditions objectives') %>% 
-  replace(. == 'Q6_6', 'Expanded objectives') %>%
-  replace(. == 'Q6_7', 'Expanded objectives') %>%
-  replace(. == 'Q6_8', 'Expanded objectives') %>%
+  replace(. == 'Q6_1', 'Traditions reasons') %>% 
+  replace(. == 'Q6_2', 'Expanded reasons') %>% 
+  replace(. == 'Q6_3', 'Traditional reasons') %>% 
+  replace(. == 'Q6_4', 'Traditional reasons') %>% 
+  replace(. == 'Q6_5', 'Traditional reasons') %>% 
+  replace(. == 'Q6_6', 'Expanded reasons') %>%
+  replace(. == 'Q6_7', 'Expanded reasons') %>%
+  replace(. == 'Q6_8', 'Expanded reasons') %>%
   ggplot2::ggplot(mapping = aes(x = Q32, y = n, fill = questions)) +
   ggplot2::geom_bar(stat = "identity", position = "dodge") +
   ggplot2::xlab("ILTER Career Level") + ggplot2::ylab("n of responces 'Very high importance' + 'High importance'") +
@@ -405,14 +403,14 @@ ILTERAnswers %>%
   filter(!is.na(age)) %>% select(-age) %>%
   group_by(decade, questions) %>% 
   tally() %>%
-  replace(. == 'Q6_1', 'Traditions objectives') %>% 
-  replace(. == 'Q6_2', 'Expanded objectives') %>% 
-  replace(. == 'Q6_3', 'Traditions objectives') %>% 
-  replace(. == 'Q6_4', 'Traditions objectives') %>% 
-  replace(. == 'Q6_5', 'Traditions objectives') %>% 
-  replace(. == 'Q6_6', 'Expanded objectives') %>%
-  replace(. == 'Q6_7', 'Expanded objectives') %>%
-  replace(. == 'Q6_8', 'Expanded objectives') %>%
+  replace(. == 'Q6_1', 'Traditions reasons') %>% 
+  replace(. == 'Q6_2', 'Expanded reasons') %>% 
+  replace(. == 'Q6_3', 'Traditional reasons') %>% 
+  replace(. == 'Q6_4', 'Traditional reasons') %>% 
+  replace(. == 'Q6_5', 'Traditional reasons') %>% 
+  replace(. == 'Q6_6', 'Expanded reasons') %>%
+  replace(. == 'Q6_7', 'Expanded reasons') %>%
+  replace(. == 'Q6_8', 'Expanded reasons') %>%
   ggplot2::ggplot(mapping = aes(x = as.character(decade), y = n, fill = questions)) +
   ggplot2::geom_bar(stat = "identity", position = "dodge") +
   ggplot2::xlab("ILTER Age") + ggplot2::ylab("n of responces 'Very high importance' + 'High importance'") +
@@ -430,14 +428,14 @@ ILTERAnswers %>%
   filter(!is.na(Q35)) %>%
   group_by(Q35, questions) %>% 
   tally() %>%
-  replace(. == 'Q6_1', 'Traditions objectives') %>% 
-  replace(. == 'Q6_2', 'Expanded objectives') %>% 
-  replace(. == 'Q6_3', 'Traditions objectives') %>% 
-  replace(. == 'Q6_4', 'Traditions objectives') %>% 
-  replace(. == 'Q6_5', 'Traditions objectives') %>% 
-  replace(. == 'Q6_6', 'Expanded objectives') %>%
-  replace(. == 'Q6_7', 'Expanded objectives') %>%
-  replace(. == 'Q6_8', 'Expanded objectives') %>%
+  replace(. == 'Q6_1', 'Traditions reasons') %>% 
+  replace(. == 'Q6_2', 'Expanded reasons') %>% 
+  replace(. == 'Q6_3', 'Traditional reasons') %>% 
+  replace(. == 'Q6_4', 'Traditional reasons') %>% 
+  replace(. == 'Q6_5', 'Traditional reasons') %>% 
+  replace(. == 'Q6_6', 'Expanded reasons') %>%
+  replace(. == 'Q6_7', 'Expanded reasons') %>%
+  replace(. == 'Q6_8', 'Expanded reasons') %>%
   ggplot2::ggplot(mapping = aes(x = Q35, y = n, fill = questions)) +
   ggplot2::geom_bar(stat = "identity", position = "dodge") +
   ggplot2::xlab("ILTER Age") + ggplot2::ylab("n of responces 'Very high importance' + 'High importance'") +
@@ -448,7 +446,7 @@ ILTERAnswers %>%
 ggsave("./images1stPart/3b_gender.png", dpi = 400)
 
 
-# Q8 Challegens
+# Q8 Barriers
 # 4a
 matrix4a <- 
   ILTERAnswers %>% 
@@ -527,5 +525,5 @@ graphics::pie(
 #                          label = round(freq, 1), size = 5))
 
 
-# Q29
-...
+
+

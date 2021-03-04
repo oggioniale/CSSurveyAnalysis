@@ -13,6 +13,31 @@ europeCountries <- rgdal::readOGR("/Users/alessandrooggioni/Documents/Alessandro
 View(worldCountries@data)
 View(europeCountries@data)
 
+## Join with ILTER DEIMS GeoInfo
+# Connect and download layers from LTER-Europe's GeoSever
+fileName <- tempfile()
+download.file("https://data.lter-europe.net/geoserver/deims/wfs?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&TYPENAME=deims:ilter_all_formal&SRSNAME=EPSG:4326", fileName)
+request <- rwfs::GMLFile$new(fileName)
+client <- rwfs::WFSCachingClient$new(request)
+ilter_all_formal <- client$getLayer("ilter_all_formal")
+# print(ilter_all_formal)
+# deletes the file(s) or directories specified by x
+# unlink(fileName)
+# FAO Global Ecological Zones
+fileNameZones <- tempfile()
+download.file("http://data.fao.org/maps/wms?styles=geonetwork_eco_zone_1255_style", fileNameZones)
+requestZones <- rwfs::GMLFile$new(fileNameZones)
+clientZones <- rwfs::WFSCachingClient$new(requestZones)
+ilter_all_formal <- client$getLayer("ilter_all_formal")
+
+sitesOnSurvey <- ilter_all_formal[ilter_all_formal$deimsid %in% ILTERAnswers$Q30, ]
+ggplot() + scale_y_continuous(limits=c(-90,90), expand=c(0,0)) +
+  scale_x_continuous(expand=c(0,0)) +
+  geom_polygon(data=worldCountries, mapping=aes(x=long, y=lat, group=group), fill='grey') +
+  geom_point(data = sitesOnSurvey, aes(x=field_coordinates_lon, y=field_coordinates_lat)) +
+  scale_colour_gradientn(colours = terrain.colors(10)) +
+  ggtitle("iLTER Sites on survey")
+ggsave("./images1stPart/sitesDistribution.png", dpi = 400)
 
 ##### 
 # Survey analysis
