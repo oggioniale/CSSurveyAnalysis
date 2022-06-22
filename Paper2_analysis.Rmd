@@ -16,8 +16,8 @@ author:
     affiliation: CNR - ISMAR
     affiliation_url: https://publications.cnr.it/authors/caterina.bergami
     orcid_id: 0000-0002-5284-1317
-citation_url: https://github.com/oggioniale/SensorML-Profile # change when the article is published on GitHub (e.g. https://rstudio.github.io/distill)
-slug: oggioni2022
+citation_url: https://github.com/oggioniale/xxx # change when the article is published on GitHub (e.g. https://rstudio.github.io/distill)
+slug: oggioniCSI2022
 bibliography: Paper2_biblio.bib
 output:
   distill::distill_article:
