@@ -4,7 +4,7 @@
 Introduction
 ==================
 
-This repository present document about the statistical analysis, performed in R, used in the paper Bergami et. al (2022) [DOI](https://doi.org/xx.xxxx/xxx) for exploring environmental Citizen Science practices at ILTER, starting from the results of a global survey.
+This repository provides a [document](https://oggioniale.github.io/CSSurveyAnalysis/) about the statistical analysis, performed in R, used in the paper Bergami et. al (2022) [DOI](https://doi.org/xx.xxxx/xxx) for exploring environmental Citizen Science practices at ILTER, starting from the results of a global survey.
 
 The aim is to allow complete sharing of the data used in the article and to give free and open dissemination of all the statistical analysis perfermed as well.
 
