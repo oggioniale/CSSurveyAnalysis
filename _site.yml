@@ -1,8 +1,0 @@
----
-name: "CSI_survey"
-title: "Statistical analysis for exploring environmental Citizen Science practices at ILTER
-output_dir: "."
-exclude: ["README.md"]
-navbar:
-  source_url: https://github.com/oggioniale/CSSurveyAnalysis
----
