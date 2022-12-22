@@ -19,7 +19,7 @@ Please cite this document:
 @software{oggioniCSI2022,
   author       = {Alessandro Oggioni and
                   Caterina Bergami},
-  title        = {oggioniale/CSSurveyAnalysis: 1.0},
+  title = {{Citizen Science Survey Analysis}},
   month        = dec,
   year         = 2022,
   publisher    = {Zenodo},
