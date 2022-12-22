@@ -17,9 +17,9 @@ Please cite this document:
 
 ``` bibtex
 @misc{oggioniCSI2022,
-  author = {Oggioni, Alessandro and Bergami, Caterina},
+  author = {Alessandro Oggioni and Caterina Bergami},
   title = {Statistical analysis for exploring environmental Citizen Science practices at ILTER},
-  url = {https://github.com/oggioniale/xxx},
+  url = {https://oggioniale.github.io/CSSurveyAnalysis/},
   year = {2022},
   doi = {xx.xxxxx/xx-xxx-xxx}
 }

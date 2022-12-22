@@ -1,0 +1,1332 @@
+---
+title: "Statistical analysis for exploring environmental Citizen Science practices and scientists' attitudes at ILTER"
+description: | 
+  In the spirit of open science, open data and reproducible science [@openEU] we share the dataset [@caterina_bergami_2022_7148597] and the statistical analysis used in the papers L’Astorina et al., in preparation and Bergami et al., in preparation for exploring environmental Citizen Science practices and scientists' attitudes at ILTER, starting from the results of a global survey.
+date: October 10, 2022
+author:
+  - first_name: "Alessandro"
+    last_name: "Oggioni"
+    url: https://github.com/oggioniale
+    affiliation: CNR - IREA
+    affiliation_url: https://publications.cnr.it/authors/alessandro.oggioni
+    orcid_id: 0000-0002-7997-219X
+  - first_name: "Caterina"
+    last_name: "Bergami"
+    url: https://github.com/cateBerg
+    affiliation: CNR - ISMAR
+    affiliation_url: https://publications.cnr.it/authors/caterina.bergami
+    orcid_id: 0000-0002-5284-1317
+citation_url: https://oggioniale.github.io/CSSurveyAnalysis/
+slug: oggioniCSI2022
+bibliography: Paper2_biblio.bib
+output:
+  distill::distill_article:
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    code_folding: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  comment = "##",
+  R.options = list(width = 70)
+)
+library(dplyr)
+library(ggplot2)
+library(distill)
+library(gtsummary)
+library(ReLTER)
+```
+
+# The dataset
+
+The exact wording of the questions and the relative possible answers are listed in the following [table](#wording).
+
+```{r, echo=TRUE, message=FALSE, layout="l-body-outset"}
+## import dataset
+dataset <- readxl::read_excel("ILTER_PublicEngagement_forPapers.xlsx")
+dataset$age <- as.numeric(format(Sys.Date(), "%Y")) - as.numeric(dataset$Q33)
+rmarkdown::paged_table(dataset, options = list(rows.print = 15))
+```
+
+# The questions and the options {#wording}
+
+```{r, echo=TRUE, message=FALSE, layout="l-body-outset"}
+questions <- readxl::read_excel("wording.xlsx")
+DT::datatable(
+  questions,
+  rownames= FALSE,
+  extensions = c('FixedColumns', "FixedHeader"),
+  options = list(
+    dom = 't',
+    ordering = F,
+    scrollY = '600px',
+    paging = FALSE,
+    scrollX = TRUE,
+    fixedHeader=TRUE,
+    fixedColumns = list(leftColumns = 1)
+  )
+)
+
+```
+
+
+If you want reproduce the analysis performed, please visit the [GitHub repo](https://...) download the repository compressed file or clone it. But please ...
+
+... remember to cite this document [@oggioniCSI2022] and the dataset [@surveyDataset] if you want to use them for other publications or analysis.
+
+# General Information
+
+*The link to the survey was sent to all the ILTER site managers through the ILTER secretariat contact list (850 email recipients). The questionnaire remained open from the end of February to mid-September 2020 with two reminders sent within this period. In total, we received 163 responses; based on an estimated 850 participating scientists, our response rate is 17%.*
+
+## Pools of the papers
+
+First part of the survey, used in L'Astorina et. al (in preparation)
+
+Number of answers with a completeness \>= 75 %:
+
+```{r, echo=TRUE}
+poolP1 <- dataset %>%
+  dplyr::filter(as.numeric(ProgressFirstPart) >= 75) %>%
+  dplyr::count()
+```
+
+**`r as.character(poolP1)`**
+
+Second part of the survey, used in Bergami et. al (in preparation)
+
+Number of answers with a completeness \>= 75 % of the columns from Q10 to Q30:
+
+```{r, echo=TRUE}
+poolP2 <- dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  # dplyr::filter(Finished == 'True') %>% # = 75
+  dplyr::count()
+```
+
+**`r as.character(poolP2)`**
+
+## Other general info of the dataset
+
+The number of persons who accessed the survey (not necessarily finished it):
+
+```{r, echo=TRUE}
+totalAnswers <- dataset %>% 
+  dplyr::filter(Finished == 'True' | Finished == 'False') %>% dplyr::count()
+```
+
+**`r totalAnswers`**
+
+The response rate is:
+
+```{r, echo=TRUE}
+respRate <- round((totalAnswers/850)*100, 2)
+```
+
+**`r respRate` %**
+
+The number of persons who finished the survey (no information about the completeness):
+
+```{r, echo=TRUE}
+completeAnswers <- dataset %>% 
+  dplyr::filter(Finished == 'True') %>% dplyr::count()
+```
+
+**`r as.character(completeAnswers)`**
+
+The response rate considering answers with a completeness \>= 50 %:
+
+```{r, echo=TRUE}
+compl50rate <- round((poolP1/850)*100, 2)
+```
+
+**`r as.character(compl50rate)`**
+
+The number of answer where the reference to the ILTER site, via [DEIMS.ID](https://deims.org/docs/deimsid.html), was NOT indicated:
+
+```{r, echo=TRUE}
+noDEIMSAnswers <- dataset %>% 
+  dplyr::filter(Q30 == 'NA') %>% dplyr::count()
+```
+
+**`r as.character(noDEIMSAnswers)`**
+
+The number of answer where the reference to the ILTER site, via [DEIMS.ID](https://deims.org/docs/deimsid.html), was indicated:
+
+```{r, echo=TRUE}
+DEIMSAnswers <- dataset %>% 
+  dplyr::filter(Q30 != 'NA') %>% dplyr::count()
+```
+
+**`r as.character(DEIMSAnswers)`**
+
+The number of answers with [DEIMS.iD](https://deims.org/docs/deimsid.html) among them:
+
+```{r, echo=TRUE}
+poolP2WithDEIMSID <- dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q30 != 'NA') %>% 
+  dplyr::count()
+```
+
+**`r as.character(poolP2WithDEIMSID)`**
+
+The number of answers with LTER network information among them:
+
+```{r, echo=TRUE}
+poolP2WithLTERNetwork <- dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(!is.na('LTERNetwork')) %>% 
+  dplyr::count()
+```
+
+**`r as.character(poolP2WithLTERNetwork)`**
+
+The number of participants in CS initiative among respondents:
+
+```{r, echo=TRUE}
+participationVSResponsesAll <- dataset %>% 
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::count()
+```
+
+**`r as.character(participationVSResponsesAll)`**
+
+The number of participants in CS initiative among respondents with a completeness \>= 50 %:
+
+```{r, echo=TRUE}
+participationVSResponses <- dataset %>% 
+  dplyr::filter(as.numeric(Progress) >= 50) %>%
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::count()
+```
+
+**`r as.character(participationVSResponses)`**
+
+The number of CS initiatives declared among respondents with a completeness \>= 50 %:
+
+```{r, echo=TRUE}
+csIntiatives <- dataset %>%
+  dplyr::filter(as.numeric(Progress) >= 50) %>%
+  dplyr::filter(Q10 > 0) %>%
+  dplyr::select(Q10) %>%
+  dplyr::summarise(Q10 = sum(Q10))
+```
+
+**`r csIntiatives`**
+
+# Geographic distribution of responses
+
+```{r geoDistSites-plot, echo=TRUE, dev='png', fig.show='hide', warning=FALSE, message=FALSE, comment="##"}
+## Join with ILTER DEIMS GeoInfo
+# Connect and download layers from LTER-Europe's GeoSever
+fileName <- tempfile()
+download.file("https://data.lter-europe.net/geoserver/deims/wfs?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&TYPENAME=deims:ilter_all_formal&SRSNAME=EPSG:4326", fileName)
+request <- rwfs::GMLFile$new(fileName)
+client <- rwfs::WFSCachingClient$new(request)
+ilter_all_formal <- client$getLayer("ilter_all_formal")
+sitesOnSurvey <- ilter_all_formal[ilter_all_formal$deimsid %in% dataset$Q30, ]
+
+htmltools::div(
+    style = htmltools::css(width="100%", height='100%'),
+    leaflet::leaflet(sitesOnSurvey) %>%
+    leaflet::addTiles() %>%
+    # addMouseCoordinates() %>%
+    # leaflet::setView(lng = , lat = 23.16001, zoom = 1) %>%
+    leaflet::addMarkers(
+      clusterOptions = leaflet::markerClusterOptions(),
+      popup = paste0(
+              # "Name: <b>", sitesOnSurvey$name, "</b><br/>",
+              "DEIMS.ID: <b><a target = 'blank' href = '", sitesOnSurvey$deimsid, "'>", sitesOnSurvey$deimsid, "</a></b><br/>"
+            ),
+       group = "Sites"
+    ) %>%
+    leaflet::addLayersControl(position = 'bottomright',
+                              overlayGroups = c(
+                                "Sites"#,
+                                # "Biome"
+                              ),
+                              options = leaflet::layersControlOptions(collapsed = FALSE)
+    )
+)
+```
+
+# Research questions
+
+## Respondents role
+
+```{r, echo=TRUE}
+dataset %>%
+  dplyr::filter(as.numeric(ProgressFirstPart) >= 75) %>%
+  dplyr::select(Q31) %>%
+  dplyr::mutate(Q31 = factor(Q31) %>% forcats::fct_explicit_na()) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q31 = "Role in the site"
+    )
+  )
+```
+
+## Respondents career level
+
+```{r, echo=TRUE}
+dataset %>%
+  dplyr::filter(as.numeric(ProgressFirstPart) >= 75) %>%
+  dplyr::select(Q32) %>%
+  dplyr::mutate(Q32 = factor(Q32) %>% forcats::fct_explicit_na()) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q32 = "Career level"
+    )
+  )
+
+trial %>%      
+  dplyr::select(response) %>%
+  # making the NA value explicit level of factor with `forcats::fct_explicit_na()`
+  dplyr::mutate(response = factor(response) %>%forcats::fct_explicit_na()) %>%
+  gtsummary::tbl_summary()
+```
+
+## Respondents age distribution
+
+```{r, echo=TRUE}
+dataset %>%
+  dplyr::filter(as.numeric(ProgressFirstPart) >= 75) %>%
+  dplyr::select(c(age, Q10, Q31:Q36)) %>%
+  dplyr::mutate(decade = floor(age/10)*10) %>%
+  dplyr::select(decade) %>%
+  dplyr::mutate(decade = factor(decade) %>% forcats::fct_explicit_na()) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      decade = "Decade of birth"
+    )
+  )
+```
+
+## Response rate by regions
+
+```{r, echo=TRUE}
+dataset %>%
+  dplyr::filter(as.numeric(ProgressFirstPart) >= 75) %>%
+  dplyr::select(Regions) %>%
+  dplyr::mutate(Regions = factor(Regions) %>% forcats::fct_explicit_na()) %>%
+  gtsummary::tbl_summary()
+```
+
+## Willingness for public engagement
+
+```{r, echo=TRUE}
+dataset %>%
+  dplyr::filter(as.numeric(ProgressFirstPart) >= 75) %>%
+  dplyr::select(Q34_1:Q34_6) %>%
+  tidyr::gather(questions, levelOfWillingness) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q34_1", "Collaborations with the public on scientific research (i.e., Citizen Science)", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q34_2", "Face-to-face science discussions and activities with the public", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q34_3", "Online science discussions and activities with the public", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q34_4", "Interviews with journalists or other media professionals about science", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q34_5", "Direct interactions with government policy makers about science", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q34_6", "Any form of public engagement with science involving children or young adults (18 years or younger)", questions)) %>%
+  dplyr::mutate(
+    levelOfWillingness = factor(
+      levelOfWillingness,
+      levels = c("Very\r\nunwilling", "Slightly \r\nunwilling", "Neither unwilling\r\nor willing", "Slightly \r\nwilling", "Very\r\nwilling")
+    ) %>% forcats::fct_explicit_na()
+  ) %>%
+  gtsummary::tbl_summary(
+    by = c(questions),
+    label = list(
+      levelOfWillingness = "Level of willingness"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Questions**")
+```
+
+## Importance of different reasons for participation in citizen science
+
+```{r, echo=TRUE}
+dataset %>%
+  dplyr::filter(as.numeric(ProgressFirstPart) >= 75) %>%
+  dplyr::select(Q6_1:Q6_8) %>%
+  tidyr::gather(questions, reasons) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q6_5", "Educate the public on environmental issues", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q6_7", "Build relationships between scientists and the public who live and work near LTER Sites or LTSER Platforms", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q6_8", "Have greater influence on policy by collaborating with the public on scientific research", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q6_4", "Educate the public on how science research is conducted", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q6_6", "Bring in perspectives and ideas from the public that can inform scientific research", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q6_1", "Get help from the public by having them collect or classify data", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q6_3", "Make a grant proposal more competitive and appealing to funders by including citizen science", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q6_2", "Get help from the public in ways that are not limited to data collection and classification", questions)) %>%
+  dplyr::mutate(
+    reasons = factor(
+      reasons,
+      levels = c("Very low\r\nimportance", "Little\r\nimportance", "Moderate\r\nimportance", "High\r\nimportance", "Very high\r\nimportance")
+    ) %>% forcats::fct_explicit_na()
+  ) %>%
+  gtsummary::tbl_summary(
+    by = c(questions),
+    label = list(
+      reasons = "Reasons"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Questions**")
+```
+
+## Possible barriers to citizen science
+
+```{r, echo=TRUE}
+dataset %>%
+  dplyr::filter(as.numeric(ProgressFirstPart) >= 75) %>%
+  dplyr::select(Q8_1:Q8_8) %>%
+  tidyr::gather(questions, barriers) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q8_7", "Scientists do not have any or enough support to start and run a citizen science project", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q8_5", "It is difficult to create long-term stable relationships with the public, which are necessary to conduct scientific research", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q8_8", "Scientists do not get credit or acknowledgement for their work in citizen science", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q8_3", "It is too difficult or time-consuming to validate data collected or classified by the public", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q8_1", "The public does not have the necessary knowledge or skills to contribute to scientific research", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q8_2", "It is too difficult or time-consuming to teach the public the necessary knowledge or skills to contribute to scientific research", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q8_6", "It is not possible to acknowledge citizen science volunteers’ contribution in grants, presentations, and publications", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q8_4", "The public is not interested in helping with science research", questions)) %>%
+  dplyr::mutate(
+    barriers = factor(
+      barriers,
+      levels = c("Strongly\r\ndisagree", "Disagree", "Neither agree\r\nnor disagree", "Agree", "Strongly\r\nagree")
+    ) %>% forcats::fct_explicit_na()
+  ) %>%
+  gtsummary::tbl_summary(
+    by = c(questions),
+    label = list(
+      barriers = "Barriers"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Questions**")
+```
+
+## Impacts of Citizen Science on scientists
+
+```{r, echo=TRUE}
+dataset %>%
+  dplyr::filter(as.numeric(ProgressFirstPart) >= 75) %>%
+  dplyr::select(Q29_1:Q29_9) %>%
+  tidyr::gather(questions, impacts) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q29_2", "My involvement in citizen science has given me a better understanding of what the public thinks about scientists and the work they do.", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q29_1", "My involvement in citizen science has given me insight into the concerns that the public has about science.", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q29_4", "My involvement in citizen science has helped me improve how I communicate about my work with stakeholders.", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q29_9", "My involvement in citizen science has helped me place my research in a broader context.", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q29_3", "My involvement in citizen science has given me an opportunity to learn from the public in ways that are relevant to the work that I do.", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q29_6", "My involvement in citizen science has helped me improve how I teach and mentor students and staff.", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q29_5", "My involvement in citizen science has helped me improve how I communicate about my work with scientists outside my field.", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q29_7", "My involvement in citizen science has influenced how I ask research questions.", questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q29_8", "My involvement in citizen science has influenced how I design studies, collect data, or analyze data.", questions)) %>%
+  dplyr::mutate(
+    impacts = factor(
+      impacts,
+      levels = c("Strongly\r\ndisagree", "Disagree", "Neither agree\r\nnor disagree", "Agree", "Strongly\r\nagree")
+    ) %>% forcats::fct_explicit_na()
+  ) %>%
+  gtsummary::tbl_summary(
+    by = c(questions),
+    label = list(
+      impacts = "Impacts"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Questions**")
+```
+
+## How many citizen science initiatives at your LTER Site or LTSER Platform have you been involved in?
+
+The percentage of participants in CS initiative among respondents with a completeness \>= 50 % and the participants with a completeness \>= 50 % of answers is:
+
+```{r, echo=TRUE}
+partiRate <- round((participationVSResponses/poolP1)*100, 1)
+```
+
+**`r partiRate` %**
+
+<!-- Which is the percentage of the pool of second part of the survey among respondents with a completeness >= 75 % and the participants with a completeness >= 50 % of answers? -->
+
+<!-- ```{r, results='hide'} -->
+
+<!-- round((poolP2/poolP1)*100, 1) -->
+
+<!-- ``` -->
+
+<!-- **`r round((poolP2/poolP1)*100, 1)`** -->
+
+The average of CS projects among the participants with a completeness \>= 75 % in the second part of survey [@bergami2022] is:
+
+```{r, echo=TRUE}
+average <- dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%
+  dplyr::select(Q10) %>%
+  dplyr::summarise(average = round(mean(Q10, na.rm=TRUE), 1))
+```
+
+**`r average`**
+
+## Does participation in CS differ by gender of ILTER scientists?
+
+```{r, echo=TRUE}
+participationCSDifference <- dataset %>%
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q10 > 0) %>%
+  dplyr::select(c(Q10, Q31:Q36)) #%>% View()
+participationCSDifference$age <- as.numeric(format(Sys.Date(), "%Y")) - participationCSDifference$Q33
+# Q35 Gender
+participationCSDifference %>%
+  dplyr::group_by(Q35) %>% 
+  # dplyr::summarise(totalCSInitiative = sum(Q10)) %>% 
+  dplyr::count(Q35) %>% 
+  dplyr::filter(n > 1) %>%
+  ggplot2::ggplot(ggplot2::aes(x = Q35, y = n)) +
+  ggplot2::geom_bar(stat = "identity", fill = "orange") +
+  ggplot2::xlab("Gender") + ggplot2::ylab("Participants in CS initiatives") +
+  ggplot2::geom_text(ggplot2::aes(label = n), vjust = 1.6, color = "white", size = 3.5) +
+  ggplot2::theme_classic()
+
+participationCSDifference %>%
+  dplyr::select(Q10, Q35) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q10 = "CS projects declared by participant (Q10)",
+      Q35 = "Gender participant (Q35)"
+    )
+) %>%
+  gtsummary::modify_header(label = "**Questions**")
+
+participationCSDifference %>%
+  dplyr::select(Q10, Q35) %>%
+  gtsummary::tbl_summary(
+    by = Q35, # split table by group
+    missing = "no", # don't list missing data separately
+    statistic = list(all_continuous() ~ "{mean} ({sd})"),
+    label = list(Q10 = "CS projects declared (Q10)")
+  ) %>%
+  gtsummary::add_n() %>% # add column with total number of non-missing observations
+  gtsummary::add_p() %>% # test for a difference between groups
+  gtsummary::modify_header(label = "**Variable**") %>% # update the column header
+  gtsummary::bold_labels()
+```
+
+## Spatial scale of the CS initiatives
+
+```{r, echo=TRUE}
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q13) %>%
+  dplyr::mutate(Q13 = strsplit(as.character(Q13), ",")) %>% 
+  tidyr::unnest(Q13) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q13 = "GSpatial scale CS initiative"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Responses**")
+
+# dataset %>% 
+#   dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+#   dplyr::filter(Q10 > 0) %>% 
+#   dplyr::select(c(Q10, Q13)) %>% # 73
+#   dplyr::count(Q13) %>% 
+#   dplyr::filter(n > 1) %>% 
+#   ggplot2::ggplot(ggplot2::aes(x = Q13, y = n)) +
+#   ggplot2::geom_bar(stat = "identity", fill = "green4") +
+#   ggplot2::xlab("") + ggplot2::ylab("Number of projects") +
+#   ggplot2::scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
+#   ggplot2::geom_text(ggplot2::aes(label = n), vjust = 1.6, color = "white", size = 3.5) +
+#   ggplot2::theme_classic()
+
+sjPlot::set_theme(
+  base = ggplot2::theme_light(),
+  axis.tickslen = 0, # hides tick marks
+  axis.title.size = .9,
+  axis.textsize = .9,
+  geom.label.size = 3.5,
+  axis.title.y.vjust = 5
+)
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(c(Q10, Q13)) %>%
+  dplyr::group_by(Q13) %>%
+  dplyr::mutate(Q13 = strsplit(as.character(Q13), ",")) %>% 
+  tidyr::unnest(Q13) %>%
+  dplyr::mutate(freq = n()) %>%
+  dplyr::ungroup() %>% 
+  dplyr::filter(freq > 1) %>%
+  dplyr::select(-freq) %>% 
+  sjPlot::plot_frq(
+    Q13,
+    show.axis.values = FALSE,
+    axis.title = c("", "Number of projects")
+  )
+```
+
+## Temporal scale of the CS initiatives
+
+```{r, echo=TRUE}
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q56) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q56 = "Projects duration (years)"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Responses**")
+
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q12) %>%
+  dplyr::mutate(Q12 = factor(Q12) %>% forcats::fct_explicit_na()) %>%
+  gtsummary::tbl_summary(
+    type = list(Q12 ~ "categorical"),
+    label = list(
+      Q12 = "Projects active/concluded"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Responses**")
+
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(c(Q12, Q56)) %>%
+  dplyr::group_by(Q12, Q56) %>%
+  dplyr::summarise(freq = dplyr::n()) %>% 
+  dplyr::filter(!is.na(Q12)) %>% 
+  ggplot2::ggplot(ggplot2::aes(x = Q12, y = Q56)) +
+  ggplot2::geom_point(ggplot2::aes(size = freq), colour = "#1F78B4") +
+  ggplot2::xlab("Is the project still active?") + 
+  ggplot2::ylab("Number of projects") +
+  ggplot2::labs(size = "Project duration (years)") +
+  ggplot2::scale_size_continuous(
+    breaks = c(2, 4, 6, 8),
+    labels = c('<=2', '4', '6', '=>8')
+  ) +
+  ggplot2::theme_bw()
+```
+
+## Research focus
+
+```{r, echo=TRUE}
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q14) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q14 = "Research focus"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Responses**")
+
+sjPlot::set_theme(
+  base = ggplot2::theme_light(),
+  axis.tickslen = 0, # hides tick marks
+  axis.title.size = .9,
+  axis.textsize = .9,
+  geom.label.size = 3.5,
+  axis.title.y.vjust = 5
+)
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(c(Q10, Q14)) %>%
+  dplyr::group_by(Q14) %>% 
+  dplyr::mutate(freq = n()) %>%
+  dplyr::ungroup() %>% 
+  dplyr::filter(freq > 1) %>%
+  dplyr::select(-freq) %>% 
+  sjPlot::plot_frq(
+    Q14,
+    show.axis.values = FALSE
+  )
+```
+
+## Research question(s)
+```{r, echo=TRUE}
+# Thanks to this guide http://www.sthda.com/english/wiki/text-mining-and-word-cloud-fundamentals-in-r-5-simple-steps-you-should-know
+strings_Q15 <- dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q15) %>%
+  dplyr::pull(Q15)
+
+docs <- tm::Corpus(tm::VectorSource(strings_Q15))
+
+# Cleaning the text
+toSpace <- tm::content_transformer(function (x , pattern) gsub(pattern, " ", x))
+docs <- tm::tm_map(docs, toSpace, "/")
+docs <- tm::tm_map(docs, toSpace, "@")
+docs <- tm::tm_map(docs, toSpace, "\\|")
+# Convert the text to lower case
+docs <- tm::tm_map(docs, tm::content_transformer(tolower))
+# Remove numbers
+docs <- tm::tm_map(docs, tm::removeNumbers)
+# Remove english common stopwords
+docs <- tm::tm_map(docs, tm::removeWords, tm::stopwords("english"))
+# Remove your own stop word
+# specify your stopwords as a character vector
+# docs <- tm::tm_map(docs, tm::removeWords, c("blabla1", "blabla2")) 
+# Remove punctuations
+docs <- tm::tm_map(docs, tm::removePunctuation)
+# Eliminate extra white spaces
+docs <- tm::tm_map(docs, tm::stripWhitespace)
+# Text stemming
+# docs <- tm::tm_map(docs, tm::stemDocument)
+
+# Build a term-document matrix
+dtm <- tm::TermDocumentMatrix(docs)
+m <- as.matrix(dtm)
+v <- sort(rowSums(m), decreasing = TRUE)
+d <- data.frame(word = names(v), freq = v)
+
+# Generate the Word cloud
+set.seed(1234)
+wordcloud::wordcloud(words = d$word, freq = d$freq, min.freq = 1,
+          max.words = 200, random.order = FALSE, rot.per = 0.05, 
+          colors = RColorBrewer::brewer.pal(8, "Dark2"))
+```
+
+## Participants number/year
+
+```{r, echo=TRUE}
+# dataset %>% 
+#   dplyr::filter(as.numeric(ProgressCS) >= 75) %>%  
+#   dplyr::filter(Q10 > 0) %>% 
+#   dplyr::select(Q10, Q17, Q18:Q18_8_TEXT, Q19:Q19_4_TEXT) %>%
+#   dplyr::group_by(Q17) %>%
+#   dplyr::summarise(numProj = n()) %>%
+#   dplyr::mutate(Q17 = forcats::fct_relevel(Q17, "Fewer than 25", "25-50", "51-100", "101-500", "More than 500", "NA")) %>% 
+#   ggplot2::ggplot(ggplot2::aes(x = Q17, y = numProj)) +
+#   ggplot2::xlab("n participants/year") + ggplot2::ylab("Number of projects") +
+#   ggplot2::geom_bar(stat = "identity", fill = "blue4") +
+#   ggplot2::geom_text(ggplot2::aes(label = numProj), vjust = 1.6, color = "white", size = 3.5) +
+#   ggplot2::theme_classic()
+
+sjPlot::set_theme(
+  base = ggplot2::theme_light(),
+  axis.tickslen = 0, # hides tick marks
+  axis.title.size = .9,
+  axis.textsize = .9,
+  geom.label.size = 3.5,
+  axis.title.y.vjust = 5
+)
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%  
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q10, Q17) %>%
+  dplyr::mutate(Q17 = forcats::fct_relevel(Q17, "Fewer than 25", "25-50", "51-100", "101-500", "More than 500", "NA")) %>%  
+  sjPlot::plot_frq(
+    Q17,
+    show.axis.values = FALSE,
+    axis.title = c("", "Number of projects")
+  )
+
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%  
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q17) %>%
+  dplyr::mutate(Q17 = factor(Q17) %>% forcats::fct_explicit_na()) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q17 = "n participants/year"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Responses**")
+```
+
+## Type of participants
+
+```{r, echo=TRUE}
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%  
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q18) %>%
+  dplyr::mutate(Q18 = strsplit(as.character(Q18), ",")) %>% 
+  tidyr::unnest(Q18) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q18 = "Group types"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Responses**")
+
+sjPlot::set_theme(
+  base = ggplot2::theme_light(),
+  axis.tickslen = 0, # hides tick marks
+  axis.title.size = .9,
+  axis.textsize = .9,
+  geom.label.size = 3.5,
+  axis.title.y.vjust = 5
+)
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q18) %>%
+    dplyr::mutate(Q18 = strsplit(as.character(Q18), ",")) %>% 
+  tidyr::unnest(Q18) %>%
+  dplyr::group_by(Q18) %>% 
+  dplyr::mutate(freq = n()) %>%
+  dplyr::ungroup() %>% 
+  dplyr::filter(freq > 1) %>%
+  dplyr::select(-freq) %>% 
+  sjPlot::plot_frq(
+    Q18,
+    show.axis.values = FALSE,
+    axis.title = c("", "Number of projects"),
+    geom.colors = "red4"
+  )
+```
+
+## Undeserved communities
+
+```{r, echo=TRUE}
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%  
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q19) %>%
+  dplyr::mutate(Q19 = strsplit(as.character(Q19), ",")) %>% 
+  tidyr::unnest(Q19) %>%
+  dplyr::mutate(Q19 = factor(Q19) %>% forcats::fct_explicit_na()) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q19 = "Group types"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Responses**")
+
+sjPlot::set_theme(
+  base = ggplot2::theme_light(),
+  axis.tickslen = 0, # hides tick marks
+  axis.title.size = .9,
+  axis.textsize = .9,
+  geom.label.size = 3.5,
+  axis.title.y.vjust = 5
+)
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q19) %>%
+  dplyr::mutate(Q19 = strsplit(as.character(Q19), ",")) %>% 
+  tidyr::unnest(Q19) %>%  
+  dplyr::group_by(Q19) %>% 
+  dplyr::mutate(freq = n()) %>%
+  dplyr::ungroup() %>% 
+  dplyr::filter(freq > 1) %>%
+  dplyr::select(-freq) %>% 
+  sjPlot::plot_frq(
+    Q19,
+    show.axis.values = FALSE,
+    axis.title = c("", "Number of projects"),
+    geom.colors = "red4"
+  )
+```
+
+## Partecipation frequency
+
+```{r, echo=TRUE}
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%  
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q20) %>%
+  dplyr::mutate(Q20 = factor(Q20) %>% forcats::fct_explicit_na()) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q20 = "Participation frequency"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Responses**")
+
+sjPlot::set_theme(
+  base = ggplot2::theme_light(),
+  axis.tickslen = 0, # hides tick marks
+  axis.title.size = .9,
+  axis.textsize = .9,
+  geom.label.size = 3.5,
+  axis.title.y.vjust = 5
+)
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q20) %>%
+  dplyr::mutate(Q20 = forcats::fct_relevel(Q20, 
+                                    "Once", "Two to three times", "Four to six times", "More than six times")) %>%
+  dplyr::group_by(Q20) %>% 
+  dplyr::mutate(freq = n()) %>%
+  dplyr::ungroup() %>% 
+  dplyr::filter(freq > 1) %>%
+  dplyr::select(-freq) %>% 
+  sjPlot::plot_frq(
+    Q20,
+    show.axis.values = FALSE,
+    axis.title = c("", "Number of projects"),
+    geom.colors = "red4"
+  )
+```
+
+## Type of involvement of the participants in the CS initiatives
+
+```{r, echo=TRUE}
+matrix7e <- dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q21_1:Q21_13) %>%
+  tidyr::gather(questions, typeOfInvol) %>% dplyr::group_by(questions, typeOfInvol) %>% dplyr::count() %>% dplyr::ungroup() %>% tidyr::spread(questions, n) %>% 
+  t() %>% 
+  data.frame(row.names(.), ., row.names = NULL) %>% 
+  `colnames<-`(c('Activity in CS', 'High involvement', 'Moderate involvement', 'Not at all involved', 'Very high involvement', 'Very little involvement', 'NA')) %>% 
+  .[-1,-1] %>% .[,-6] %>% 
+  as.matrix() %>% 
+  `rownames<-`(c(
+    'Help define research questions',
+    'Help interpret data and draw conclusions',
+    'Help disseminate conclusions',
+    'Help translate the results into action',
+    'Help discuss results and ask new questions',
+    'Help gather information and resources for research',
+    'Help develop hypotheses',
+    'Help design data collection methodologies',
+    'Help collect samples or record data',
+    'Help classify data',
+    'Help process samples',
+    'Help validate data', 
+    'Help analyze data'
+  )) %>% 
+  reshape2::melt() 
+
+matrix7e$Var2 <- factor(matrix7e$Var2, levels = c("Not at all involved", "Very little involvement", "Moderate involvement", "High involvement", "Very high involvement"))
+matrix7e <- matrix7e[matrix7e$value!=0,]
+matrix7e <- matrix7e[!is.na(matrix7e$value),]
+
+ggplot2::ggplot(matrix7e, aes(x = Var2, y = Var1)) + 
+  ggplot2::geom_raster(ggplot2::aes(fill = as.numeric(value))) + 
+  ggplot2::scale_fill_gradient(low = "grey90", high = "red4", na.value = "grey10", guide = "colourbar") +
+  ggplot2::labs(x = "Degree of Involvement", y = "Type of Involvement") +
+  ggplot2::scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
+  ggplot2::scale_y_discrete(labels = function(x) stringr::str_wrap(x, width = 30)) +
+  ggplot2::labs(fill = "n of answers") +
+  ggplot2::theme_classic() + ggplot2::theme(axis.text.x = element_text(size = 8, angle = 0, vjust = 0.3),
+                          axis.text.y = element_text(size = 8),
+                          plot.title = element_text(size = 11))
+
+dataset %>%
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q21_1:Q21_13) %>% 
+  tidyr::gather(questions, involvements) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q21_1", 'Help define research questions', questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q21_10", 'Help interpret data and draw conclusions', questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q21_11", 'Help disseminate conclusions', questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q21_12", 'Help translate the results into action', questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q21_13", 'Help discuss results and ask new questions', questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q21_2", 'Help gather information and resources for research', questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q21_3", 'Help develop hypotheses', questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q21_4", 'Help design data collection methodologies', questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q21_5", 'Help collect samples or record data', questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q21_6", 'Help classify data', questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q21_7", 'Help process samples', questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q21_8", 'Help validate data',  questions)) %>%
+  dplyr::mutate(questions = ifelse(questions == "Q21_9", 'Help analyze data', questions)) %>%
+  dplyr::mutate(
+    involvements = factor(
+      involvements,
+      levels = c("Not at all\r\ninvolved", "Very little\r\ninvolvement", "Moderate\r\ninvolvement", "High\r\ninvolvement", "Very high\r\ninvolvement")
+    ) %>% forcats::fct_explicit_na()
+  ) %>%
+  gtsummary::tbl_summary(
+    by = c(questions),
+    label = list(
+      involvements = "Involvements"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Questions**")
+```
+
+## Training methodologies of the volunteers
+
+```{r, echo=TRUE}
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%  
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q22) %>%
+  dplyr::mutate(Q22 = strsplit(as.character(Q22), ",")) %>% 
+  tidyr::unnest(Q22) %>%
+  dplyr::mutate(Q22 = factor(Q22) %>% forcats::fct_explicit_na()) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q22 = "Training methodologies"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Responses**")
+
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>% 
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q22) %>%
+  dplyr::mutate(Q22 = strsplit(as.character(Q22), ",")) %>% 
+  tidyr::unnest(Q22) %>%
+  dplyr::group_by(Q22) %>% 
+  dplyr::mutate(freq = n()) %>%
+  dplyr::ungroup() %>% 
+  dplyr::filter(freq > 1) %>%
+  dplyr::select(-freq) %>% 
+  sjPlot::plot_frq(
+    Q22,
+    show.axis.values = FALSE,
+    axis.title = c("", "Number of projects"),
+    geom.colors = "yellow4"
+  )
+```
+
+## Data type
+
+```{r, echo=TRUE}
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%  
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q23) %>%
+  dplyr::mutate(Q23 = strsplit(as.character(Q23), ",")) %>% 
+  tidyr::unnest(Q23) %>%
+  dplyr::mutate(Q23 = factor(Q23) %>% forcats::fct_explicit_na()) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q23 = "Data type"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Responses**")
+
+dataset %>%
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%
+  dplyr::filter(Q10 > 0) %>%
+  dplyr::select(Q10, Q23) %>%
+  dplyr::mutate(Q23 = strsplit(as.character(Q23), ",")) %>% 
+  tidyr::unnest(Q23) %>%
+  dplyr::group_by(Q23) %>%
+  dplyr::mutate(freq = n()) %>%
+  dplyr::ungroup() %>% 
+  dplyr::filter(freq > 3) %>%
+  dplyr::select(-freq) %>% 
+  sjPlot::plot_frq(
+    Q23,
+    show.axis.values = FALSE,
+    axis.title = c("", "Number of projects"),
+    geom.colors = "violetred4"
+  )
+```
+
+## Quality check
+
+```{r, echo=TRUE}
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%  
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q25) %>%
+  dplyr::mutate(Q25 = strsplit(as.character(Q25), ",")) %>% 
+  tidyr::unnest(Q25) %>%
+  dplyr::mutate(Q25 = factor(Q25) %>% forcats::fct_explicit_na()) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q25 = "Quality check"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Responses**")
+
+dataset %>%
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%
+  dplyr::filter(Q10 > 0) %>%
+  dplyr::select(Q10, Q25) %>%
+  dplyr::mutate(Q25 = strsplit(as.character(Q25), ",")) %>% 
+  tidyr::unnest(Q25) %>%
+  dplyr::group_by(Q25) %>%
+  dplyr::mutate(freq = n()) %>%
+  dplyr::ungroup() %>% 
+  dplyr::select(-freq) %>% 
+  sjPlot::plot_frq(
+    Q25,
+    show.axis.values = FALSE,
+    axis.title = c("", "Number of projects"),
+    geom.colors = "violetred4"
+  )
+```
+
+## Ways to share data
+
+```{r, echo=TRUE}
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%  
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q24) %>%
+  dplyr::mutate(Q24 = factor(Q24) %>% forcats::fct_explicit_na()) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q24 = "Data sharing metodology"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Responses**")
+
+dataset %>%
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%
+  dplyr::filter(Q10 > 0) %>%
+  dplyr::select(Q10, Q24) %>%
+  dplyr::group_by(Q24) %>%
+  dplyr::mutate(freq = n()) %>%
+  dplyr::ungroup() %>% 
+  dplyr::filter(freq > 1) %>%
+  dplyr::select(-freq) %>% 
+  sjPlot::plot_frq(
+    Q24,
+    show.axis.values = FALSE,
+    axis.title = c("", "Number of projects"),
+    geom.colors = "chocolate4"
+  )
+```
+
+## Ways to share findings
+
+```{r, echo=TRUE}
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%  
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q26) %>%
+  dplyr::mutate(
+    Q26 = replace(
+      Q26, 
+      stringr::str_starts(Q26, "At in-person meetings"),
+      "At in-person meetings"
+    )
+  ) %>%
+  dplyr::mutate(
+    Q26 = replace(
+      Q26, 
+      stringr::str_starts(Q26, "At virtual meetings"),
+      "At virtual meetings"
+    )
+  ) %>%
+  dplyr::mutate(
+    Q26 = replace(
+      Q26, 
+      stringr::str_starts(Q26, "Through indirect online communications"),
+      "Through indirect online communications"
+    )
+  ) %>%
+  dplyr::mutate(
+    Q26 = replace(
+      Q26, 
+      stringr::str_starts(Q26, "Through direct online communications"),
+      "Through direct online communications"
+    )
+  ) %>%
+  dplyr::mutate(
+    Q26 = replace(
+      Q26, 
+      stringr::str_starts(Q26, "Through written newsletters or reports"),
+      "Through written newsletters or reports"
+    )
+  ) %>%
+  dplyr::mutate(
+    Q26 = replace(
+      Q26, 
+      stringr::str_starts(Q26, "We do not share findings with volunteers."),
+      "We do not share findings with volunteers."
+    )
+  ) %>%
+  dplyr::mutate(
+    Q26 = replace(
+      Q26, 
+      stringr::str_starts(Q26, "Other"),
+      "Other"
+    )
+  ) %>%
+  dplyr::mutate(Q26 = factor(Q26) %>% forcats::fct_explicit_na()) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q26 = "Ways to share findings"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Responses**")
+
+dataset %>%
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%
+  dplyr::filter(Q10 > 0) %>%
+  dplyr::select(Q10, Q26) %>%
+  dplyr::group_by(Q26) %>%
+  dplyr::mutate(
+    Q26 = replace(
+      Q26, 
+      stringr::str_starts(Q26, "At in-person meetings"),
+      "At in-person meetings"
+    )
+  ) %>%
+  dplyr::mutate(
+    Q26 = replace(
+      Q26, 
+      stringr::str_starts(Q26, "At virtual meetings"),
+      "At virtual meetings"
+    )
+  ) %>%
+  dplyr::mutate(
+    Q26 = replace(
+      Q26, 
+      stringr::str_starts(Q26, "Through indirect online communications"),
+      "Through indirect online communications"
+    )
+  ) %>%
+  dplyr::mutate(
+    Q26 = replace(
+      Q26, 
+      stringr::str_starts(Q26, "Through direct online communications"),
+      "Through direct online communications"
+    )
+  ) %>%
+  dplyr::mutate(
+    Q26 = replace(
+      Q26, 
+      stringr::str_starts(Q26, "Through written newsletters or reports"),
+      "Through written newsletters or reports"
+    )
+  ) %>%
+  dplyr::mutate(
+    Q26 = replace(
+      Q26, 
+      stringr::str_starts(Q26, "We do not share findings with volunteers."),
+      "We do not share findings with volunteers."
+    )
+  ) %>%
+  dplyr::mutate(
+    Q26 = replace(
+      Q26, 
+      stringr::str_starts(Q26, "Other"),
+      "Other"
+    )
+  ) %>%
+  dplyr::mutate(freq = n()) %>%
+  dplyr::ungroup() %>% 
+  dplyr::filter(freq > 1) %>%
+  dplyr::select(-freq) %>% 
+  sjPlot::plot_frq(
+    Q26,
+    show.axis.values = FALSE,
+    axis.title = c("", "Number of projects"),
+    geom.colors = "chocolate4"
+  )
+```
+
+## Ways to acknowledge participants
+
+```{r, echo=TRUE}
+dataset %>% 
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%  
+  dplyr::filter(Q10 > 0) %>% 
+  dplyr::select(Q27) %>%
+  dplyr::mutate(Q27 = strsplit(as.character(Q27), ",")) %>% 
+  tidyr::unnest(Q27) %>%
+  dplyr::mutate(Q27 = factor(Q27) %>% forcats::fct_explicit_na()) %>%
+  gtsummary::tbl_summary(
+    label = list(
+      Q27 = "Quality check"
+    )
+  ) %>%
+  gtsummary::modify_header(label = "**Responses**")
+
+dataset %>%
+  dplyr::filter(as.numeric(ProgressCS) >= 75) %>%
+  dplyr::filter(Q10 > 0) %>%
+  dplyr::select(Q10, Q27) %>%
+  dplyr::mutate(Q27 = strsplit(as.character(Q27), ",")) %>% 
+  tidyr::unnest(Q27) %>%
+  dplyr::group_by(Q27) %>%
+  dplyr::mutate(freq = n()) %>%
+  dplyr::ungroup() %>% 
+  dplyr::select(-freq) %>% 
+  sjPlot::plot_frq(
+    Q27,
+    show.axis.values = FALSE,
+    axis.title = c("", "Number of projects"),
+    geom.colors = "chocolate4"
+  )
+```
+
+## Geographical distribution of the ILTER initiatives
+
+### by ILTER Environmental characteristics of the site
+```{r, echo=TRUE}
+# listOfAllSites <- ReLTER::get_ilter_generalinfo()
+# saveRDS(listOfAllSites, file = "ilter_sitesData.rds")
+# listOfAllSites <- readRDS(file = "ilterSitesData.rds")
+# remove the sites without geometry
+# listOfAllSites <- listOfAllSites[c(1:1226, 1228:1237, 1239:1240, 1242:1243, 1248:1249), ]
+# 
+# siteWithDeimsId <- dataset %>% 
+#   dplyr::select(Q30) %>% 
+#   .[-160,] %>% 
+#   dplyr::filter(Q30 != "NA") %>% 
+#   dplyr::add_row(Q30 = c(
+#     "https://deims.org/664177a4-a21a-4f59-9601-00909e275868",
+#     "https://deims.org/5a38fc08-5257-4b13-8465-1d50ea166b95",
+#     "https://deims.org/96ba6c55-a555-4e96-a3e6-14d6dfe8785b",
+#     "https://deims.org/923cb154-83c9-444d-817a-cde7879c09b5"
+#   )) %>% 
+#   unique() # 84 DEIMS.iD
+# sitesOnSurvey <- listOfAllSites[listOfAllSites$uri %in% siteWithDeimsId$Q30, ] # 84 sites compared with ILTER formal sites
+
+# collect biogeographical region and biome from DEIMS site
+# sitesOnSurveyEnvChar <- lapply(
+#   as.list(sitesOnSurvey$uri),
+#   FUN = function(x) {ReLTER::get_site_info(x, category = c("EnvCharacts"))}
+# ) %>% 
+#   dplyr::bind_rows() %>% 
+#   dplyr::select(uri, envCharacteristics.biogeographicalRegion, envCharacteristics.biome)
+  
+# sitesOnSurvey_2 <- merge(x = sitesOnSurvey, y = sitesOnSurveyEnvChar, by.x = "uri", by.y = "uri", all = T)
+# saveRDS(sitesOnSurvey_2, file = "sitesOnSurvey_2.rds")
+sitesOnSurvey_2 <- readRDS(file = "sitesOnSurvey_2.rds")
+biomeNum <- sitesOnSurvey_2$envCharacteristics.biome[-68] %>% unique() %>% length()
+getPalette <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(12, "Set3"))
+
+# Biome map plot
+library("rnaturalearth")
+library("rnaturalearthdata")
+
+world <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+ggplot2::ggplot(data = world) +
+  ggplot2::geom_sf() +
+  ggplot2::xlab("Longitude") + ggplot2::ylab("Latitude") +
+  ggplot2::scale_y_continuous(limits = c(-90, 90), expand = c(0, 0)) +
+  ggplot2::scale_x_continuous(expand = c(0, 0)) +
+  ggplot2::geom_sf(
+    data = sitesOnSurvey_2$geometry[-68], 
+    size = 1, 
+    ggplot2::aes(
+      color = sitesOnSurvey_2$envCharacteristics.biome[-68]
+    ),
+  ) + # feature 68 missing the information in DEIMS_SDR about the Biome
+  ggplot2::scale_fill_manual(getPalette(biomeNum)) +
+  ggplot2::ggtitle("iLTER Sites on survey") +
+  ggplot2::scale_fill_discrete(name = "New Legend Title")
+```
+
+### by biogeographic distribution
+
+```{r, echo=TRUE}
+# Biogeographical Region map plot
+nc <- sf::st_read("../TeaBagCatalogue/Maps_export/Zonobiome_poly.shp", quiet = TRUE)
+ggplot2::ggplot() +
+  ggplot2::scale_y_continuous(limits = c(-90, 90), expand = c(0, 0)) +
+  ggplot2::scale_x_continuous(expand = c(0, 0)) +
+  ggplot2::geom_sf(data = nc, ggplot2::aes(fill = Legend), lwd = 0) +
+  ggplot2::geom_sf(data = sitesOnSurvey_2$geometry[-68], color = "black", size = 1) +
+  ggplot2::scale_fill_discrete(name = "Biogeographical Region")
+```
+
+# Acknowledgments
+
+We acknowledge the ILTER Coordination Committee and Secretariat for contributing to sharing widely the survey within the whole network and all the respondents of the ILTER community for their availability to participate.
+
+All the analysis are performed with R language [@rLang].
+
+This article is created by distill R package [@distill2022], the tables summary are made with gtsummary R package [@gtsummary], the plots with ggplot2 [@ggplot2] and sjPlot [@sjPlot], the maps are created by leaflet [@leaflet], leaflet.extras [@leafletExtras] and rnaturalearth [@rnaturalearth] R packages, while tidyr [@tidyr], dplyr [@dplyr], tm - Text Mining [@tm], wordcloud [@wordcloud] and stringr [@stringr] are used for manipulating the data for analysis. The ReLTER [@ReLTER] was used to access information on ILTER sites in DEIMS-SDR [@jecoinf201901005].
