@@ -75,7 +75,7 @@ DT::datatable(
 
 If you want reproduce the analysis performed, please visit the [GitHub repo](https://...) download the repository compressed file or clone it. But please ...
 
-... remember to cite this document [@oggioniCSI2022] and the dataset [@surveyDataset] if you want to use them for other publications or analysis.
+... remember to cite this document [@oggioniCSI2022] and the dataset [@caterina_bergami_2022_7148597] if you want to use them for other publications or analysis.
 
 # General Information
 
@@ -454,7 +454,7 @@ partiRate <- round((participationVSResponses/poolP1)*100, 1)
 
 <!-- **`r round((poolP2/poolP1)*100, 1)`** -->
 
-The average of CS projects among the participants with a completeness \>= 75 % in the second part of survey [@bergami2022] is:
+The average of CS projects among the participants with a completeness \>= 75 % in the second part of survey is:
 
 ```{r, echo=TRUE}
 average <- dataset %>% 

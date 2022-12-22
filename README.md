@@ -19,7 +19,7 @@ Please cite this document:
 @software{oggioniCSI2022,
   author       = {Alessandro Oggioni and
                   Caterina Bergami},
-  title = {{Citizen Science Survey Analysis}},
+  title = {Statistical analysis for exploring environmental Citizen Science practices and scientists' attitudes at ILTER},
   month        = dec,
   year         = 2022,
   publisher    = {Zenodo},
@@ -43,3 +43,8 @@ and finally run the different code.
 Support contact
 ---------------
 For support, suggestions or comments you can use the [GitHub Issue Tracker](https://github.com/oggioniale/CSSurveyAnalysis/issues).
+
+
+Acknowledgments
+---------------
+We acknowledge the ILTER Coordination Committee and Secretariat for contributing to sharing widely the survey within the whole network and all the respondents of the ILTER community for their availability to participate.
