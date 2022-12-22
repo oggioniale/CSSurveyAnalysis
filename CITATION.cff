@@ -1,0 +1,28 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Citizen Science Survey Analysis
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Alessandro
+    family-names: Oggioni
+    email: alessandro.oggioni@cnr.it
+    affiliation: CNR - IREA
+    orcid: 'https://orcid.org/0000-0002-7997-219X'
+  - given-names: Caterina
+    family-names: Bergami
+    email: caterina.bergami@cnr.it
+    affiliation: CNR-ISMAR
+    orcid: 'https://orcid.org/0000-0002-5284-1317'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.7472885
+repository-code: 'https://github.com/oggioniale/CSSurveyAnalysis'
+url: 'https://oggioniale.github.io/CSSurveyAnalysis/'
+license: GPL-3.0+
+version: '1.0'
+date-released: '2022-12-22'
