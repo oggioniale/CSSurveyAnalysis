@@ -4,14 +4,14 @@
 Introduction
 ==================
 
-This repository provides a [document](https://oggioniale.github.io/CSSurveyAnalysis/) about the statistical analysis, performed in R, used in the paper Bergami et. al (2022) [DOI](https://doi.org/xx.xxxx/xxx) for exploring environmental Citizen Science practices at ILTER, starting from the results of a global survey.
+This repository provides a [document](https://oggioniale.github.io/CSSurveyAnalysis/) about the statistical analysis, performed in R, used in the papers L’Astorina et al., in preparation and Bergami et al., in preparation for exploring environmental Citizen Science practices and scientists' attitudes at ILTER, starting from the results of a global survey. 
 
-The aim is to allow complete sharing of the data used in the article and to give free and open dissemination of all the statistical analysis perfermed as well.
+In the spirit of open science, open data and reproducible science we share [the dataset](https://doi.org/10.5281/zenodo.7148597) and the statistical analysis.
 
 
 Credits
 -------
-The R script is being developed by Alessandro Oggioni ([IREA-CNR](http://www.irea.cnr.it)) and Caterina Bergami ([ISMAR-CNR](http://www.ismar.cnr.it)). It is released under the [GNU General Public License version 3](https://www.gnu.org/licenses/gpl-3.0.html)(GPL‑3).
+The R script is being developed by Alessandro Oggioni ([IREA-CNR](http://www.irea.cnr.it)) and Caterina Bergami ([ISMAR-CNR](http://www.ismar.cnr.it)). It is released under the [GNU General Public License version 3](https://www.gnu.org/licenses/gpl-3.0.html) (GPL‑3).
 
 Please cite this document:
 
@@ -24,6 +24,16 @@ Please cite this document:
   doi = {xx.xxxxx/xx-xxx-xxx}
 }
 ```
+
+
+Use
+-------
+To reproduce the analysis please download the excel file of [dataset](https://doi.org/10.5281/zenodo.7148597), execute this code for load the dataset
+```
+dataset <- readxl::read_excel("ILTER_PublicEngagement_forPapers.xlsx")
+dataset$age <- as.numeric(format(Sys.Date(), "%Y")) - as.numeric(dataset$Q33)
+```
+and finally run the different code.
 
 
 Support contact
