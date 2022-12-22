@@ -1,4 +1,4 @@
-<!-- [![](https://img.shields.io/badge/doi-10.5281/zenodo.5576813-yellow.svg)](https://doi.org/10.5281/zenodo.5576813)-->
+[![DOI](https://zenodo.org/badge/307766965.svg)](https://zenodo.org/badge/latestdoi/307766965)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
 Introduction
@@ -16,12 +16,16 @@ The R script is being developed by Alessandro Oggioni ([IREA-CNR](http://www.ire
 Please cite this document:
 
 ``` bibtex
-@misc{oggioniCSI2022,
-  author = {Alessandro Oggioni and Caterina Bergami},
-  title = {Statistical analysis for exploring environmental Citizen Science practices at ILTER},
-  url = {https://oggioniale.github.io/CSSurveyAnalysis/},
-  year = {2022},
-  doi = {xx.xxxxx/xx-xxx-xxx}
+@software{oggioniCSI2022,
+  author       = {Alessandro Oggioni and
+                  Caterina Bergami},
+  title        = {oggioniale/CSSurveyAnalysis: 1.0},
+  month        = dec,
+  year         = 2022,
+  publisher    = {Zenodo},
+  version      = {1.0},
+  doi          = {10.5281/zenodo.7472886},
+  url          = {https://doi.org/10.5281/zenodo.7472886}
 }
 ```
 
