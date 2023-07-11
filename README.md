@@ -4,7 +4,7 @@
 Introduction
 ==================
 
-This repository provides a [document](https://oggioniale.github.io/CSSurveyAnalysis/) about the statistical analysis, performed in R, used in the papers L’Astorina et al., in preparation and Bergami et al., in preparation for exploring environmental Citizen Science practices and scientists' attitudes at ILTER, starting from the results of a global survey. 
+This repository provides a [document](https://oggioniale.github.io/CSSurveyAnalysis/) about the statistical analysis, performed in R, used in the papers L’Astorina et al., 2023 [DOI](https://doi.org/10.3389/fenvs.2023.1130022) and Bergami et al., 2023 [DOI](https://doi.org/10.3389/fenvs.2023.1130020) for exploring environmental Citizen Science practices and scientists' attitudes at ILTER, starting from the results of a global survey. 
 
 In the spirit of open science, open data and reproducible science we share [the dataset](https://doi.org/10.5281/zenodo.7148597) and the statistical analysis.
 
