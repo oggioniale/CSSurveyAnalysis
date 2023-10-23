@@ -1,7 +1,7 @@
 ---
 title: "Statistical analysis for exploring environmental Citizen Science practices and scientists' attitudes at ILTER"
 description: | 
-  In the spirit of open science, open data and reproducible science [@openEU] we share the dataset [@caterina_bergami_2022_7148597] and the statistical analysis used in the papers L’Astorina et al., in preparation and Bergami et al., in preparation for exploring environmental Citizen Science practices and scientists' attitudes at ILTER, starting from the results of a global survey.
+  In the spirit of open science, open data and reproducible science [@openEU] we share the dataset [@caterina_bergami_2022_7148597] and the statistical analysis used in the papers L’Astorina et al., 2023 [DOI](https://doi.org/10.3389/fenvs.2023.1130022) and Bergami et al., 2023 [DOI](https://doi.org/10.3389/fenvs.2023.1130020) for exploring environmental Citizen Science practices and scientists' attitudes at ILTER, starting from the results of a global survey.
 date: October 10, 2022
 author:
   - first_name: "Alessandro"
